@@ -1,0 +1,16 @@
+@import "~vue-material/dist/theme/engine"; // Import the theme engine
+
+@include md-register-theme("default", (
+  primary: #92278f, // The primary color of your brand
+  accent: #ba68c8 // The secondary color of your brand
+));
+
+@import "~vue-material/dist/theme/all"; // Apply the theme
+
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(./material.woff2) format('woff2');
+    //src: url(http://civil808.com/en/staticfile/material.woff2) format('woff2');
+  }
