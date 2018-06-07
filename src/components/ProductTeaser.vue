@@ -1,30 +1,20 @@
 <template>
-    <md-card class="news-teaser" md-with-hover>   
+    <md-card class="product-teaser" md-with-hover>
+      <md-ripple>  
+        <md-card-media v-if="pic">
+          <img v-bind:src="pic | converturl " />
+        </md-card-media>
+    
         <md-card-header>
-          <div class="md-title"> {{newstitle}} </div>
-          <div class="md-subhead"> </div>
+          <div class="md-subhead" style="text-align: right;opacity: 1;"> {{title}} </div>
         </md-card-header>
 
-        <md-card-content>
-            <md-tooltip md-direction="left" md-delay="300">Date</md-tooltip>
-          <md-icon>timer</md-icon><!--<b>Date:</b>--> {{newsdate}}
-          
-        </md-card-content>
-        <md-card-content class="company">
-            <md-tooltip md-direction="left" md-delay="300">Organizer</md-tooltip>
-          <md-icon>supervised_user_circle</md-icon><!--<b>Organizer:</b>--> {{newscompany}}
-          
-        </md-card-content>
+        <p style="text-align: right;padding: 0 15px;font-size: 1.2em;color: #2E7D32;">{{sellPrice | priceFormat}} تومان</p>
+        <!-- <md-card-actions>
+          <md-button class="md-raised" @click="set_news(nid)">read more</md-button>
+        </md-card-actions> -->
 
-        <md-card-actions>
-          <md-button class="md-raised" @click="set_news(newsnid)">read more</md-button>
-        </md-card-actions>
-
-        <md-card-content class="date-fan">
-            <div class="day">{{newsdate | day_detecter}}</div>
-            <div class="month">{{newsdate | month_detecter}}</div>
-            <div class="year">{{newsdate | year_detecter}}</div>
-        </md-card-content>
+      </md-ripple>  
     </md-card>
 </template>
 
@@ -32,8 +22,8 @@
 import news from '@/components/news'
 
 export default {
-    name: 'newsteaser',
-    props: ['newstitle','newsdate','newscompany','newsnid'],
+    name: 'ProductTeaser',
+    props: ['title','pic','date','nid','sellPrice'],
     methods:{
         set_news(nid){
             this.$store.commit('SET_NEWS', nid);
@@ -68,6 +58,15 @@ export default {
             if (!value) return ''
             value = value.toString()
             return value.split('-')[2]
+        },
+        converturl: function(value){
+            if (!value) return '';
+            var thestart = 'http://civil808.com/sites/default/files';///styles/808/public
+            var theend = value.substr(8);
+            return thestart + theend;
+        },
+        priceFormat: function(value){
+            return parseFloat(value, 10).toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,").toString()//Math.round()
         }
    }
 }
@@ -75,6 +74,19 @@ export default {
 </script>
 
 <style lang="scss">
+.product-teaser{
+	width: calc(20% - 10px);
+	margin: 1%;
+    flex: 0 1 23%;
+    max-height: 450px;
+}
+.md-card-media img {
+	max-width: 100%;
+	margin: auto;
+	display: block;
+    max-height: 300px;
+    width: inherit;
+}
     .md-tooltip-left{
         margin-top:-74px;
         margin-right:-15px; 

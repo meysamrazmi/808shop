@@ -1,6 +1,11 @@
 <template>
   <div>
-    <newspane/>
+    <div style="width: 100%;">{{$store.state.selected}}</div>
+
+    <div class="md-layout">
+        <filters class="md-layout-item md-size-20" style="padding: 0 15px;"/>
+        <products class="md-layout-item md-size-80 md-layout"/>
+    </div>
 
     <section id="subscribe">
         <div class="input-wrapper">
@@ -9,13 +14,13 @@
           <div style="margin-top: 20px;" v-if="aftersubmit" >Thank You :)</div>
         </div>
     </section>
-    
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-import newspane from '@/components/newspane'
+import products from '@/components/products'
+import filters from '@/components/filters'
 
 export default {
   name: 'home',
@@ -45,7 +50,8 @@ export default {
     }
   },
   components: {
-    newspane
+    products,
+    filters
   }
 }
 </script>

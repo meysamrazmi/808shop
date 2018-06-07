@@ -26,8 +26,7 @@ export default {
   data(){
     return{
       news:[],
-      close:false,
-      loading: true
+      close:false
     }
   },
   mounted(){
