@@ -1,19 +1,26 @@
 <template>
-    <div class="filters">
-        <div class="md-card" style="margin-bottom: 15px;" v-for="item in filters" :key="item.tid" v-if="item.tid">
-          <md-toolbar style="min-height: 50px;" :md-elevation="0">
-            <span class="md-subheading">{{item.name}}</span>
-          </md-toolbar>
-
-          <md-list class="md-scrollbar" style="max-height: 250px;overflow: overlay;">
-            <md-checkbox 
-              v-for="sub_item in item.children" :key="sub_item.tid" 
-              v-model="$store.state.selected['t'+ item.tid]" 
-              :value="sub_item.tid">
-                {{sub_item.name}}
-            </md-checkbox>
-          </md-list>
-        </div>
+    <div class="filters" style="position: relative;">
+      <div class="loading" v-if="$store.state.filtersLoading">
+        <md-progress-spinner 
+          :md-diameter="50" 
+          :md-stroke="2"
+          md-mode="indeterminate" 
+          style="position: fixed;top: calc(50% - 50px);">
+        </md-progress-spinner>
+      </div>
+      <div class="md-card" style="margin-bottom: 15px;" v-for="item in filters" :key="item.tid" v-if="item.tid">
+        <md-toolbar style="min-height: 50px;" :md-elevation="0">
+          <span class="md-subheading">{{item.name}}</span>
+        </md-toolbar>
+        <md-list class="md-scrollbar" style="max-height: 250px;overflow: overlay;">
+          <md-checkbox 
+            v-for="sub_item in item.children" :key="sub_item.tid" 
+            v-model="$store.state.selected['t'+ item.tid]" 
+            :value="sub_item.tid">
+              {{sub_item.name}}
+          </md-checkbox>
+        </md-list>
+      </div>
     </div>
 </template>
 
@@ -31,7 +38,17 @@ export default {
     fetch('http://meysam.dev.com/shop/product/json/filter')
       .then(response => response.json())
       .then((data) => {
-          this.filters = data
+        this.filters = data
+
+        //making a dictionary for filters
+        var filters = {}
+        data.forEach(category => {
+          filters[category.tid] = category.name
+          category.children.forEach(child => {filters[child.tid] = child.name})
+        })
+        this.$store.commit('SET_FILTERS', filters)
+
+        setTimeout(() => {this.$store.commit('CLEAR_LOADING', 'filtersLoading')}, 300)
     })
   },
 }

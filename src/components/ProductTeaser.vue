@@ -1,18 +1,16 @@
 <template>
-    <md-card class="product-teaser" md-with-hover>
+    <md-card class="product-teaser" :class="('product-'+ nid)" md-with-hover>
       <md-ripple>  
-        <md-card-media v-if="pic">
-          <img v-bind:src="pic | converturl " />
+        <md-card-media v-if="pic" md-ratio="1:1">
+          <img v-bind:src="pic | converturl" />
         </md-card-media>
     
         <md-card-header>
           <div class="md-subhead" style="text-align: right;opacity: 1;"> {{title}} </div>
         </md-card-header>
 
-        <p style="text-align: right;padding: 0 15px;font-size: 1.2em;color: #2E7D32;">{{sellPrice | priceFormat}} تومان</p>
-        <!-- <md-card-actions>
-          <md-button class="md-raised" @click="set_news(nid)">read more</md-button>
-        </md-card-actions> -->
+        <p class="list-price price" v-if="listPrice >= sellPrice">{{listPrice | priceFormat}} <span>تومان</span></p>
+        <p class="sell-price price">{{sellPrice | priceFormat}} تومان</p>
 
       </md-ripple>  
     </md-card>
@@ -23,7 +21,7 @@ import news from '@/components/news'
 
 export default {
     name: 'ProductTeaser',
-    props: ['title','pic','date','nid','sellPrice'],
+    props: ['title','pic','date','nid','listPrice','sellPrice'],
     methods:{
         set_news(nid){
             this.$store.commit('SET_NEWS', nid);
@@ -60,10 +58,8 @@ export default {
             return value.split('-')[2]
         },
         converturl: function(value){
-            if (!value) return '';
-            var thestart = 'http://civil808.com/sites/default/files';///styles/808/public
-            var theend = value.substr(8);
-            return thestart + theend;
+            if (!value) return ''
+            return value.replace('meysam.dev', 'civil808')
         },
         priceFormat: function(value){
             return parseFloat(value, 10).toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,").toString()//Math.round()
@@ -75,10 +71,28 @@ export default {
 
 <style lang="scss">
 .product-teaser{
-	width: calc(20% - 10px);
-	margin: 1%;
-    flex: 0 1 23%;
-    max-height: 450px;
+    width: 19%;
+	margin: 15px 1%;
+	-webkit-box-flex: 0;
+	-ms-flex: 0 1 19%;
+	flex: 0 1 18%;
+	max-height: 370px;
+}
+.price{
+	text-align: right;
+	padding: 0px 15px;
+	font-size: 1.1em;
+	color: rgb(46, 125, 50);
+    &.list-price {
+    	text-decoration: line-through;
+    	color: rgba(255,0,0,0.75);
+    	font-size: 12px;
+    	margin: -5px 0 -15px 0px;
+    }
+}
+.md-subhead {
+	height: 40px;
+	overflow: hidden;
 }
 .md-card-media img {
 	max-width: 100%;
@@ -87,55 +101,5 @@ export default {
     max-height: 300px;
     width: inherit;
 }
-    .md-tooltip-left{
-        margin-top:-74px;
-        margin-right:-15px; 
-    }
-    .md-card.news-teaser{
-        //background-color:white;
-        min-height: 240px;
-        text-align: left;
-        position: relative;
-        .md-title {
-            font-size: 15px;
-            letter-spacing: 0;
-            line-height: 21px;
-            min-width:240px;
-        }
-        .md-card-content{
-            padding: 4px 16px;
-        }
-        .md-subhead b{
-            color:#333
-        }
-        .md-card-actions {
-            position: absolute;
-            right: 0px;
-            bottom: 0;
-        }
-        .company{
-            margin-bottom: 65px;
-        }
-        .md-card-content.date-fan {
-            position: absolute;
-            bottom: 0;
-            z-index: -1;
-            .day {
-                font-size: 47px;
-                color: #eee;
-                position: absolute;
-                left: 9px;
-            }
-            .month {
-                /* position: absolute; */
-                margin: 3px 0 0 45px;
-                font-size: 20px;
-                color: #eee;
-            }
-            .year {
-                color: #dadada;margin-left: 31px;
-            }
-        }
-    } 
 </style>
 

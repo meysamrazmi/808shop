@@ -7,8 +7,8 @@ const store = new Vuex.Store({
     //strict: process.env.NODE_ENV !== 'production',  
     state:{
         newsnid: 0,
-        news_loading : true,
         loading: true,
+        filtersLoading: true,
         selected : {
           t2258: [],
           t2259: [],
@@ -26,9 +26,10 @@ const store = new Vuex.Store({
           t2261: 'exam',
           t2262: 'education_kind',
           t2264: 'academic_orientation',
-          t2265: [],
+          t2265: 'special',
           t2458: 'producer',
-        }
+        },
+        filters : {}
     },
     mutations:{
         SET_NEWS(state,newnid){
@@ -38,16 +39,19 @@ const store = new Vuex.Store({
         SET_NEWS_LOADING(state){
             state.news_loading = false
         },
-        SET_LOADING(state){
-            state.loading = true
+        SET_LOADING(state, type){
+            state[type] = true
         },
-        CLEAR_LOADING(state){
-            state.loading = false
-        }
+        CLEAR_LOADING(state, type){
+            state[type] = false
+        },
+        SET_FILTERS(state, filters){
+            state.filters = filters
+        },
     },
     getters:{
         getMynid: state => state.newsnid,
-        get_news_state: state => state.news_loading
+        getFilters: state => state.selected,
     },
     actions:{
 
