@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="md-layout" style="align-items: flex-start;">
+    <div class="md-layout" style="align-items: flex-start; padding: 0 0 30px 15px;">
         <filters class="md-layout-item md-size-20" style="padding: 0 15px;"/>
         <products class="md-card md-theme-default md-layout-item md-size-80"/>
     </div>

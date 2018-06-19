@@ -35,7 +35,7 @@ export default {
     }
   },
   mounted() {
-    fetch('http://meysam.dev.com/shop/product/json/filter')
+    fetch('http://ali.dev.com/shop/product/json/filter')
       .then(response => response.json())
       .then((data) => {
         this.filters = data
@@ -59,14 +59,17 @@ export default {
   margin: 5px 16px 6px 0;
   min-height: 20px;
 }
-  .viewport {
-    width: 320px;
-    max-width: 100%;
-    display: inline-block;
-    vertical-align: top;
-    overflow: auto;
-    border: 1px solid rgba(#000, .12);
+label.md-checkbox-label {
+	white-space: nowrap;
+}
+.filters.md-layout-item{
+
+  @media (max-width: 1280px) {
+    min-width: 25%;
+	  max-width: 25%;
+	  flex: 0 1 25%;
   }
+}
 </style>
 
 

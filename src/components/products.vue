@@ -1,5 +1,5 @@
 <template>
-    <div class="md-elevation-1" style="padding: 0 15px;">
+    <div class="products md-elevation-1" style="padding: 0 15px;">
       <div 
         class="md-layout" 
         style="flex: 1 1 100%;	align-items: center;">
@@ -7,7 +7,7 @@
           class="md-layout-item" 
           style="flex: 0 20%;	text-align: left;	order: 1;	font-size: 13px;" 
           v-if="count > 0">
-          نمایش 1 - 30 از {{count}} محصول
+          {{pager_count}}
           <md-icon style="margin-right: 8px;font-size: 20px !important;">widgets</md-icon>
           </span>
         <md-field 
@@ -17,11 +17,11 @@
           <label>جستجو</label>
           <md-input 
             v-model.lazy="searchInput" 
-            @keyup.native.enter="getProducts({})"></md-input>
+            @keyup.native.enter="getProducts()"></md-input>
           <md-icon>search</md-icon>
         </md-field>
         <md-switch 
-          @change="getProducts({})" 
+          @change="getProducts()" 
           v-model="stock"
           class="md-layout-item" 
           style="align-items: center;font-weight: 500;margin-right: 45px;" >
@@ -41,7 +41,14 @@
       </div>
       
       <md-divider></md-divider>
-      
+
+      <md-empty-state v-if="count < 1" style="	margin: 30px auto;"
+        md-rounded
+        md-icon="search"
+        md-label="موردی یافت نشد"
+        md-description="فیلتر های خود را تغییر دهید تا نتایج بیشتری مشاهده کنید.">
+      </md-empty-state>
+
       <div class="md-layout" style="position: relative;	margin: 0 -1%;">
         <div class="loading" v-if="$store.state.loading">
           <md-progress-spinner 
@@ -59,14 +66,26 @@
         :listPrice="product.list_price"
         :sellPrice="product.price"/>
       </div>
+      
+      <div class="pager-container">
+        <md-button class="md-icon-button" @click="set_pager('first')" v-if="pager.length > 1 && page > 1"><md-icon>last_page</md-icon></md-button>
+        <md-button class="md-icon-button" @click="set_pager('prev')"  v-if="pager.length > 1 && page > 1"><md-icon>chevron_right</md-icon></md-button>
+        <md-button class="md-icon-button" v-for="i in pager" :key="i" 
+        v-if="(page > 5 && i < page + 5 && i > page - 5) || (page < 5 && i < 9)" 
+        :class="pager_classes(i)"
+        @click="set_pager(i)">
+          {{i}}
+        </md-button>
+        <md-button class="md-icon-button" @click="set_pager('next')" v-if="pager.length > 1 && page < pager.length"><md-icon>chevron_left</md-icon></md-button>
+        <md-button class="md-icon-button" @click="set_pager('last')" v-if="pager.length > 1 && page < pager.length"><md-icon>first_page</md-icon></md-button>
+      </div>
     </div>
 </template>
 
 <script>
-import axios from 'axios'
 import ProductTeaser from '@/components/ProductTeaser'
-import { mapGetters } from 'vuex'
 import Vue from 'vue';
+import { switchCase } from 'babel-types';
 
 export default {
   name: 'products',
@@ -77,6 +96,8 @@ export default {
       stock: false,
       count: 0,
       chips: {},
+      page: 1,
+      pager: [],
     }
   },
   mounted() {
@@ -84,11 +105,10 @@ export default {
     var selected = this.$store.state.selected
     var names = this.$store.state.queryNames
     var ids = {}
-    Object.keys(names).map((key)=>{
+    Object.keys(names).map((key)=>{ //translating query names to tids
       ids[names[key]] = key
     })
     Object.keys(query).map((key)=>{
-      console.log(query[key])
       switch(key){
         case 'search': 
           this.searchInput = query[key]
@@ -96,39 +116,42 @@ export default {
         case 'stock': 
           this.stock = true
           break
+        case 'page': 
+          this.page = query[key]
+          break
         default : 
           selected[ids[key]] = query[key].split(",")
           break
       }
     })
-    this.getProducts({})
+    //after handling url queries its time to filter products
+    this.getProducts()
+    
     this.$store.watch(
-      (state) => {
-        return state.selected
-      },
-      () => {
-        this.getProducts({})
-      },
-      {
-        deep: true //add this if u need to watch object properties change etc.
-      }
+      (state) => {return state.selected}, 
+      () => { this.getProducts()}, 
+      { deep: true} 
+    )
+    this.$store.watch(
+      (state) => {return state.filters},
+      () => {this.update_chips()},
+      { deep: true} 
     )
   },
   methods:{
-    getProducts(options){
+    getProducts(){
       this.set_loading()
-      var url = ""
-      var query = {}
       var selected = this.$store.state.selected
       var names = this.$store.state.queryNames
       var filters = this.$store.state.filters
+      var url = ""
+      var query = {}
       var chipps = {}
 
-      //handling filters
-      var firstt = true
+      //handling filters checkboxes
+      var first_query = true
       Object.keys(selected).map(function(Key) {
         var val = selected[Key];
-        var name = names[Key];
         if(val.length){
           var selectedTid = ""
           var first = true
@@ -138,9 +161,9 @@ export default {
             chipps[tid] = filters[tid]
           })
 
-          url += ((!firstt)? "&" : "") + name + "=" + selectedTid
-          query[name] = selectedTid
-          firstt = false
+          url += ((!first_query)? "&" : "") + names[Key] + "=" + selectedTid
+          query[names[Key]] = selectedTid
+          first_query = false
         }
       });
       this.chips = chipps
@@ -154,8 +177,6 @@ export default {
         delete this.chips.search
       }
       
-
-
       //handling stock
       if(this.stock){
         url += '&stock=1'
@@ -165,35 +186,47 @@ export default {
         delete this.chips.stock
       }
       
-      var q = { name: "home", query : query }
-      this.$router.replace(q)
-      console.log(url)
-      fetch('http://meysam.dev.com/shop/product/json?'+ url)
+      //handling pager
+      if(this.page > 1){
+        url += '&page=' + (this.page - 1)
+        query.page = this.page
+      }
+
+      //submitting changes
+      this.$router.replace({ name: "home", query : query })
+      fetch('http://ali.dev.com/shop/product/json?'+ url)
         .then(response => response.json())
         .then((data) => {
           this.products = data.products
+          if(!data.hasOwnProperty('count') || data.count < 1){
+            this.count = 0
+            setTimeout(() => {this.$store.commit('CLEAR_LOADING','loading')}, 300)
+            return
+          } 
           this.count = data.count
+          if(Math.ceil(data.count / 30) < this.page){
+            this.page = Math.ceil(data.count / 30)
+            this.getProducts()
+          }
+          this.update_pager()
           setTimeout(() => {this.$store.commit('CLEAR_LOADING','loading')}, 300)
         })
     },
     set_loading(){
       this.$store.commit('SET_LOADING', 'loading');
     },
-
-    chips_delete(i){
-      console.log(i)
+    chips_delete(i){//callback for delete button in chips
       delete this.chips[i]
       switch(i){
         case 'stock':
           this.stock = false
-          this.getProducts({})
+          this.getProducts()
         break
         case 'search':
           this.searchInput = ''
-          this.getProducts({})
+          this.getProducts()
         break
         default:
-          console.log('d')
           var obj = this.$store.state.selected
           Object.keys(obj).map(function(Key) { // searching in store to delete from
             var val = obj[Key]
@@ -203,15 +236,70 @@ export default {
           })
         break
       }
-    }
+    },
+    update_chips(){
+      var filters = this.$store.state.filters
+      Object.keys(this.chips).map((Key) => {
+        if(Key != 'search' && Key != 'stock')
+          this.chips[Key] = filters[Key]
+      });      
+    },
+    update_pager(){
+      var i = 1
+      this.pager = []
+      if(this.count > 30){
+        this.pager.push(i)
+        while(i*30 < this.count){
+          this.pager.push(i+1)
+          i++
+        }
+      }
+    },
+    pager_classes(i){
+      return {active: i == this.page}
+    },
+    set_pager(i){
+      switch(i){
+        case 'first':
+          this.page = 1
+          break
+        case 'prev': 
+          this.page--
+          break
+        case 'next': 
+          this.page++
+          break
+        case 'last': 
+          this.page = Math.ceil(this.count / 30)
+          break
+        default : 
+          this.page = i
+          break
+      }
+      this.getProducts()
+    },
   },
   components: {
     ProductTeaser
   },
+  computed: {
+    pager_count: function(){
+      var start = (this.page - 1) * 30 + 1
+      var till = (this.count - start > 29)? start + 29 : this.count
+      return 'نمایش ' + start +' - '+ till + ' از '+ this.count +' محصول' 
+    },
+  }
 }
 </script>
 
 <style lang="scss">
+.md-layout-item.products{
+    @media (max-width: 1280px) {
+    min-width: 75%;
+	  max-width: 75%;
+	  flex: 0 1 75%;
+  }
+}
 .loading {
 	position: absolute;
 	z-index: 3;
@@ -250,6 +338,16 @@ export default {
     }
   }
 }
+.pager-container{
+  margin: 30px;
+  .active {
+  	background: #fff !important;
+  	border: 1px solid #9C27B0;
+  	box-shadow: none !important;
+  	color: #9C27B0 !important;
+  }
+}
+
 </style>
 
 

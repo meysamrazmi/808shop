@@ -1,5 +1,6 @@
 <template>
-    <md-card class="product-teaser" :class="('product-'+ nid)" md-with-hover>
+    <md-card class="product-teaser" :class="('product-'+ nid)" md-with-hover 
+        @click.native="_go(nid)">
       <md-ripple>  
         <md-card-media v-if="pic" md-ratio="1:1">
           <img v-bind:src="pic | converturl" />
@@ -9,7 +10,7 @@
           <div class="md-subhead" style="text-align: right;opacity: 1;"> {{title}} </div>
         </md-card-header>
 
-        <p class="list-price price" v-if="listPrice >= sellPrice">{{listPrice | priceFormat}} <span>تومان</span></p>
+        <p class="list-price price" v-if="listPrice > sellPrice">{{listPrice | priceFormat}} <span>تومان</span></p>
         <p class="sell-price price">{{sellPrice | priceFormat}} تومان</p>
 
       </md-ripple>  
@@ -25,6 +26,9 @@ export default {
     methods:{
         set_news(nid){
             this.$store.commit('SET_NEWS', nid);
+        },
+        _go(nid){
+          window.location.href = "http://civil808.com/node/"+ nid
         }
     },
     components: {
@@ -77,6 +81,11 @@ export default {
 	-ms-flex: 0 1 19%;
 	flex: 0 1 18%;
 	max-height: 370px;
+    @media (max-width: 1280px){
+    	width: 23%;
+	    -ms-flex: 0 1 23%;
+    	flex: 0 1 23%;
+    }
 }
 .price{
 	text-align: right;
