@@ -15,7 +15,7 @@
           md-clearable 
           md-layout="box">
           <label>جستجو</label>
-          <md-input 
+          <md-input class="reset-input"
             v-model.lazy="searchInput" 
             @keyup.native.enter="getProducts()"></md-input>
           <md-icon>search</md-icon>
@@ -63,6 +63,7 @@
         :title="product.title" 
         :pic="product.picture" 
         :nid="product.nid"
+        :status="product.status"
         :listPrice="product.list_price"
         :sellPrice="product.price"/>
       </div>
@@ -194,20 +195,18 @@ export default {
 
       //submitting changes
       this.$router.replace({ name: "home", query : query })
-      fetch('http://ali.dev.com/shop/product/json?'+ url)
+      fetch('http://civil808.com/shop/product/json?'+ url)
         .then(response => response.json())
         .then((data) => {
-          this.products = data.products
-          if(!data.hasOwnProperty('count') || data.count < 1){
-            this.count = 0
-            setTimeout(() => {this.$store.commit('CLEAR_LOADING','loading')}, 300)
-            return
-          } 
-          this.count = data.count
-          if(Math.ceil(data.count / 30) < this.page){
+          //set page in url query to the last possible page if it is bigger than product count
+          if(Math.ceil(data.count / 30) < this.page && this.page > 1){
             this.page = Math.ceil(data.count / 30)
+            this.page = this.page == 0 ? 1 : this.page
             this.getProducts()
           }
+
+          this.products = data.products
+          this.count = data.count
           this.update_pager()
           setTimeout(() => {this.$store.commit('CLEAR_LOADING','loading')}, 300)
         })
@@ -308,11 +307,12 @@ export default {
 	right: 0;
 	top: 0;
 	height: 100%;
+  text-align: center;
 }
 .md-headline{
   margin-bottom: 40px;
 }
-.md-field .md-input-action {
+div.md-field .md-input-action {
   left: 0;
 	right: inherit;
 	background: #fff;
@@ -337,17 +337,30 @@ export default {
     	fill: #555 !important;
     }
   }
+  button {
+  	box-shadow: none;
+  }
 }
 .pager-container{
   margin: 30px;
-  .active {
-  	background: #fff !important;
-  	border: 1px solid #9C27B0;
-  	box-shadow: none !important;
-  	color: #9C27B0 !important;
+  text-align: center;
+  button {
+  	float: none;
+	  background: transparent;
+	  box-shadow: none;
+	  color: rgba(0, 0, 0, 0.87) !important;
+    &.active {
+      background: #fff !important;
+      border: 1px solid #9C27B0;
+      box-shadow: none !important;
+      color: #9C27B0 !important;
+    }
   }
 }
-
+.reset-input {
+	margin: 0 !important;
+	box-shadow: none !important;
+}
 </style>
 
 

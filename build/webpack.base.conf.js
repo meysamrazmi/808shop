@@ -62,7 +62,7 @@ module.exports = {
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
+          name: utils.assetsPath('fonts/[name].[hash:7].[ext]') //process.env.NODE_ENV === 'production' ? utils.assetsPath('../../fonts/[name].[hash:7].[ext]'): utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
       }
     ]

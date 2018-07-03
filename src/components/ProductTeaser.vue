@@ -1,17 +1,19 @@
 <template>
-    <md-card class="product-teaser" :class="('product-'+ nid)" md-with-hover 
+    <md-card class="product-teaser" :class="[('product-'+ nid), {'vijeh': has_discount}]" md-with-hover 
         @click.native="_go(nid)">
       <md-ripple>  
         <md-card-media v-if="pic" md-ratio="1:1">
           <img v-bind:src="pic | converturl" />
         </md-card-media>
-    
+
+        <span class="discount" v-if="has_discount">فروش ویژه</span>
+
         <md-card-header>
           <div class="md-subhead" style="text-align: right;opacity: 1;"> {{title}} </div>
         </md-card-header>
-
-        <p class="list-price price" v-if="listPrice > sellPrice">{{listPrice | priceFormat}} <span>تومان</span></p>
-        <p class="sell-price price">{{sellPrice | priceFormat}} تومان</p>
+        <p class="list-price price" v-if="has_discount && status != 'unavailable'">{{listPrice | priceFormat}} <span>تومان</span></p>
+        <p class="sell-price price" v-if="status != 'unavailable'">{{sellPrice | priceFormat}} تومان</p>
+        <p style="padding: 0px 15px;color: #F44336;font-weight: bold;" v-else>نا موجود</p>
 
       </md-ripple>  
     </md-card>
@@ -22,14 +24,19 @@ import news from '@/components/news'
 
 export default {
     name: 'ProductTeaser',
-    props: ['title','pic','date','nid','listPrice','sellPrice'],
+    props: ['title','pic','date','nid','listPrice','sellPrice','status'],
     methods:{
         set_news(nid){
             this.$store.commit('SET_NEWS', nid);
         },
         _go(nid){
           window.location.href = "http://civil808.com/node/"+ nid
-        }
+        },
+    },
+    computed: {
+        has_discount: function(){
+            return parseInt(this.listPrice) > parseInt(this.sellPrice)
+        },
     },
     components: {
         news
@@ -86,12 +93,19 @@ export default {
 	    -ms-flex: 0 1 23%;
     	flex: 0 1 23%;
     }
+    &:hover span.discount{
+        padding: 2px 12px;
+    }
+    &.vijeh {
+        border-top: 3px solid #F44336;
+    }
 }
 .price{
 	text-align: right;
 	padding: 0px 15px;
 	font-size: 1.1em;
-	color: rgb(46, 125, 50);
+    color: rgb(46, 125, 50);
+    margin: 1em 0;
     &.list-price {
     	text-decoration: line-through;
     	color: rgba(255,0,0,0.75);
@@ -109,6 +123,17 @@ export default {
 	display: block;
     max-height: 300px;
     width: inherit;
+}
+span.discount {
+	background: #F44336;
+	color: #fff;
+	padding: 2px 6px;
+	font-size: 11px;
+	left: 0px;
+	top: 10px;
+	letter-spacing: -0.35px;
+	transition: all 0.2s ease;
+	position: absolute;
 }
 </style>
 

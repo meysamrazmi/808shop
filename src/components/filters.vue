@@ -35,7 +35,7 @@ export default {
     }
   },
   mounted() {
-    fetch('http://ali.dev.com/shop/product/json/filter')
+    fetch('http://civil808.com/shop/product/json/filter')
       .then(response => response.json())
       .then((data) => {
         this.filters = data
@@ -55,7 +55,7 @@ export default {
 </script>
 
 <style lang="scss">
-.md-checkbox {
+div.md-checkbox {
   margin: 5px 16px 6px 0;
   min-height: 20px;
 }

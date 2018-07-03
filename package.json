@@ -2,7 +2,7 @@
   "name": "civil808-en",
   "version": "1.0.0",
   "description": "English version of civil808 E-learning",
-  "author": "MarjanAshofteh <marjan.cs90@gmail.com>",
+  "author": "Meysamrazmi <m.razmi.92@gmail.com>",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
