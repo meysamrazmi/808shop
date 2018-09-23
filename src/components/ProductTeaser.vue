@@ -1,6 +1,6 @@
 <template>
-    <md-card class="product-teaser" :class="[('product-'+ nid), {'vijeh': has_discount}]" md-with-hover 
-        @click.native="_go(nid)">
+    <a class="product-teaser" :class="[('product-'+ nid)]" :href="'http://civil808.com/node/' + nid" target="_blank">
+    <md-card :class="[{'vijeh': has_discount}]" md-with-hover>
       <md-ripple>  
         <md-card-media v-if="pic" md-ratio="1:1">
           <img v-bind:src="pic | converturl" />
@@ -17,6 +17,7 @@
 
       </md-ripple>  
     </md-card>
+    </a>
 </template>
 
 <script>
@@ -25,14 +26,6 @@ import news from '@/components/news'
 export default {
     name: 'ProductTeaser',
     props: ['title','pic','date','nid','listPrice','sellPrice','status'],
-    methods:{
-        set_news(nid){
-            this.$store.commit('SET_NEWS', nid);
-        },
-        _go(nid){
-          window.location.href = "http://civil808.com/node/"+ nid
-        },
-    },
     computed: {
         has_discount: function(){
             return parseInt(this.listPrice) > parseInt(this.sellPrice)
@@ -134,6 +127,9 @@ span.discount {
 	letter-spacing: -0.35px;
 	transition: all 0.2s ease;
 	position: absolute;
+}
+a:not(.md-button):hover {
+	text-decoration: none;
 }
 </style>
 

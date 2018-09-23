@@ -320,6 +320,8 @@ div.md-field .md-input-action {
 	height: 30px;
 	width: 30px;
 	min-width: 30px;
+  box-shadow: none;
+	color: #333 !important;
 }
 .chips-container {
   text-align: right;
