@@ -35,7 +35,7 @@ export default {
     }
   },
   mounted() {
-    fetch('http://civil808.com/shop/product/json/filter')
+    fetch('https://civil808.com/shop/product/json/filter')
       .then(response => response.json())
       .then((data) => {
         this.filters = data

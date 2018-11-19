@@ -195,7 +195,7 @@ export default {
 
       //submitting changes
       this.$router.replace({ name: "home", query : query })
-      fetch('http://civil808.com/shop/product/json?'+ url)
+      fetch('https://civil808.com/shop/product/json?'+ url)
         .then(response => response.json())
         .then((data) => {
           //set page in url query to the last possible page if it is bigger than product count

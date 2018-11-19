@@ -1,5 +1,5 @@
 <template>
-    <a class="product-teaser" :class="[('product-'+ nid)]" :href="'http://civil808.com/node/' + nid" target="_blank">
+    <a class="product-teaser" :class="[('product-'+ nid)]" :href="'https://civil808.com/node/' + nid" target="_blank">
     <md-card :class="[{'vijeh': has_discount}]" md-with-hover>
       <md-ripple>  
         <md-card-media v-if="pic" md-ratio="1:1">
@@ -21,7 +21,6 @@
 </template>
 
 <script>
-import news from '@/components/news'
 
 export default {
     name: 'ProductTeaser',
@@ -30,9 +29,6 @@ export default {
         has_discount: function(){
             return parseInt(this.listPrice) > parseInt(this.sellPrice)
         },
-    },
-    components: {
-        news
     },
     filters: {
         year_detecter: function (value) {
